@@ -62,7 +62,7 @@ Try {
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
-	[string]$appScriptVersion = '1.0.0'
+	[string]$appScriptVersion = '1.0.1'
 	[string]$appScriptDate = '03/29/2017'
 	[string]$appScriptAuthor = 'Jordan Hamilton'
 	##*===============================================
@@ -111,7 +111,7 @@ Try {
 		[string]$installPhase = 'Pre-Installation'
 
 		## Show Welcome Message, close Adobe apps, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'acrobat,acrocef,acrodist,acrotray,adobe audition cc,adobe cef helper,adobe desktop service,adobe qt32 server,adobearm,adobecollabsync,adobegcclient,adobeipcbroker,adobeupdateservice,afterfx,agsservice,animate,armsvc,cclibrary,ccxprocess,cephtmlengine,coresync,creative cloud,dynamiclinkmanager,illustrator,indesign,node,pdapp,photoshop' -CheckDiskSpace -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'acrobat,acrocef,acrodist,acrotray,adobe audition cc,adobe cef helper,adobe desktop service,adobe qt32 server,adobearm,adobecaptivate,adobecollabsync,adobegcclient,adobeipcbroker,adobeupdateservice,afterfx,agsservice,animate,armsvc,cclibrary,ccxprocess,cephtmlengine,coresync,creative cloud,dynamiclinkmanager,illustrator,indesign,node,pdapp,photoshop,robohtml,roboscreencapture' -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -141,7 +141,7 @@ Try {
 		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) {
 			$mainExitCode = $exitCode.ExitCode
 		}
-		$exitCode = Execute-Process -Path "$dirFiles\Exceptions\exceptionDeployer.exe" -Parameters "--workflow=install --mode=post" -WindowStyle "Hidden" -PassThru -WaitForMsiExec
+		$exitCode = Execute-Process -Path "$dirFiles\Exceptions\exceptionDeployer.exe" -Parameters "--workflow=install --mode=post" -WindowStyle "Hidden" -IgnoreExitCodes '1,2' -PassThru -WaitForMsiExec
 		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) {
 			$mainExitCode = $exitCode.ExitCode
 		}
@@ -153,7 +153,7 @@ Try {
 
 		## <Perform Post-Installation tasks here>
 		## Install Adobe updates
-		Execute-Process -Path "${envCommonProgramFilesX86}\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" -WindowStyle "Hidden" -PassThru -WaitForMsiExec
+		Execute-Process -Path "${envCommonProgramFilesX86}\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" -WindowStyle "Hidden" -IgnoreExitCodes '1,2' -PassThru -WaitForMsiExec
 		Remove-File -Path "${envCommonDesktop}\Adobe Creative Cloud.lnk" -ContinueOnError $true
 
 		## Copy exercise files
@@ -161,7 +161,7 @@ Try {
 		If (!(Test-Path $COMExerciseFiles) -eq $true) {
 			New-Folder -Path $COMExerciseFiles
 		}
-		Copy-File -Path "$dirSupportFiles\COM Exercise Files" -Destination $COMExerciseFiles -Recurse -ContinueOnError $true
+		Copy-File -Path "$dirSupportFiles\COM Exercise Files\*" -Destination $COMExerciseFiles -Recurse -ContinueOnError $true
 
 		## Change ACL on exercise files folder
 		$ACL = Get-Acl $COMExerciseFiles
@@ -197,7 +197,7 @@ Try {
 		[string]$installPhase = 'Pre-Uninstallation'
 
 		## Show Welcome Message
-		Show-InstallationWelcome -CloseApps 'acrobat,acrocef,acrodist,acrotray,adobe audition cc,adobe cef helper,adobe desktop service,adobe qt32 server,adobearm,adobecollabsync,adobegcclient,adobeipcbroker,adobeupdateservice,afterfx,agsservice,animate,armsvc,cclibrary,ccxprocess,cephtmlengine,coresync,creative cloud,dynamiclinkmanager,illustrator,indesign,node,pdapp,photoshop'
+		Show-InstallationWelcome -CloseApps 'acrobat,acrocef,acrodist,acrotray,adobe audition cc,adobe cef helper,adobe desktop service,adobe qt32 server,adobearm,adobecaptivate,adobecollabsync,adobegcclient,adobeipcbroker,adobeupdateservice,afterfx,agsservice,animate,armsvc,cclibrary,ccxprocess,cephtmlengine,coresync,creative cloud,dynamiclinkmanager,illustrator,indesign,node,pdapp,photoshop,robohtml,roboscreencapture'
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -221,6 +221,7 @@ Try {
 		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) {
 			$mainExitCode = $exitCode.ExitCode
 		}
+		Remove-MSIApplications -Name "Adobe Captivate" -ContinueOnError $true
 		##*===============================================
 		##* POST-UNINSTALLATION
 		##*===============================================
@@ -249,8 +250,8 @@ Catch {
 # SIG # Begin signature block
 # MIIU4wYJKoZIhvcNAQcCoIIU1DCCFNACAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDBCCCjH17uFcCR
-# 1dvQpvoVxHV5x+gH90gyzSuPJZorIaCCD4cwggQUMIIC/KADAgECAgsEAAAAAAEv
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCjv60Yy5EDUb9Z
+# NqUamN5i8kj/6nSxljURUY3oIBnbqaCCD4cwggQUMIIC/KADAgECAgsEAAAAAAEv
 # TuFS1zANBgkqhkiG9w0BAQUFADBXMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xv
 # YmFsU2lnbiBudi1zYTEQMA4GA1UECxMHUm9vdCBDQTEbMBkGA1UEAxMSR2xvYmFs
 # U2lnbiBSb290IENBMB4XDTExMDQxMzEwMDAwMFoXDTI4MDEyODEyMDAwMFowUjEL
@@ -337,26 +338,26 @@ Catch {
 # FgNlZHUxGTAXBgoJkiaJk/IsZAEZFgltc3VkZW52ZXIxFTATBgoJkiaJk/IsZAEZ
 # FgV3aW5hZDEZMBcGA1UEAxMQd2luYWQtVk1XQ0EwMS1DQQITfwAAACITuo77mvOv
 # 9AABAAAAIjANBglghkgBZQMEAgEFAKBmMBgGCisGAQQBgjcCAQwxCjAIoAKAAKEC
-# gAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIN91
-# /WJAwJqqI7nhoXQb/SkiLVcsnHvbnqOF3rYHGne6MA0GCSqGSIb3DQEBAQUABIIB
-# AFbYlI9bC2tZzOm+rfP42Na0ieTNLQrAby0MDfgNVaK/Uz7uVL92Rp/weeTheUVW
-# 02CBH5WkTOLbZQFVM0SoIHNSW4kZ0cC+ulVjMnkjnwwZrNtgu++TG+bUI8a0Cg+a
-# ess74EAhsdPPwyGeBINq8gNQEXlMcCHWUd7Kv9Jk3OWK6Qyq1DactxWjMrjuHixk
-# kIVamPclqIcDUlk7JAqZbCpNCLTGAf0BUOHWS78EarJHC7bGj8YwKVXYmHFmB+W5
-# 2PttLlE2ouKMyfXcmcrSQrCSpyMTsbopuRMR49+nn0yc3Qpf/M+igcFA1wkeuaOD
-# aQ9m8D1DyKo8zmmABCJnvxShggKiMIICngYJKoZIhvcNAQkGMYICjzCCAosCAQEw
+# gAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIKTw
+# DgBr3Cf0VQuGPAWbw0YFq9uf7ZaQHPEQi8rTdtQHMA0GCSqGSIb3DQEBAQUABIIB
+# AH1XLd3k8fnJmGLKnCFBsMEUXy6Y+CpwMxAQpcnM0hyBinVLu/FpsOqYmA7YkLUR
+# FpvWB4Dd96Y3ucim7FOPW3LXwHJGWDT82SAqWJZTD5pWAmH9G3JdJhp9PLKwWXOV
+# y3yb8zp+CR+BKr54hO4I/gM1XaeBHgiXXKTTBaiC31WiUW6jvzVOgQlhWJFbMmiu
+# /w0HK+8e5y650xkoKffUuScNNoPtoKVEmt9NOVMAUzYqGOIrXv0xvy0DflSDCTGl
+# u3UVKJBHMsyiI/BHHH2s71QeU0WmfYQGlQequqvmFDjLm6a+HtmRMivOyXbS2G8q
+# VVdxN8hbqT6/O+XQflMsN/6hggKiMIICngYJKoZIhvcNAQkGMYICjzCCAosCAQEw
 # aDBSMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEoMCYG
 # A1UEAxMfR2xvYmFsU2lnbiBUaW1lc3RhbXBpbmcgQ0EgLSBHMgISESHWmadklz7x
 # +EJ+6RnMU0EUMAkGBSsOAwIaBQCggf0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEH
-# ATAcBgkqhkiG9w0BCQUxDxcNMTcwMzI5MTg0NTQ3WjAjBgkqhkiG9w0BCQQxFgQU
-# I30nkAwoGyjib4CrqWD4lj0kBQcwgZ0GCyqGSIb3DQEJEAIMMYGNMIGKMIGHMIGE
+# ATAcBgkqhkiG9w0BCQUxDxcNMTcwMzI5MjIyMjM5WjAjBgkqhkiG9w0BCQQxFgQU
+# BLSlVAyc2+MM6LxiLvbwdWOKUHAwgZ0GCyqGSIb3DQEJEAIMMYGNMIGKMIGHMIGE
 # BBRjuC+rYfWDkJaVBQsAJJxQKTPseTBsMFakVDBSMQswCQYDVQQGEwJCRTEZMBcG
 # A1UEChMQR2xvYmFsU2lnbiBudi1zYTEoMCYGA1UEAxMfR2xvYmFsU2lnbiBUaW1l
 # c3RhbXBpbmcgQ0EgLSBHMgISESHWmadklz7x+EJ+6RnMU0EUMA0GCSqGSIb3DQEB
-# AQUABIIBAB8B4RNDKa3GziQmruol2sKLcCL8dxdFsiTpAA0WKhHr2UHvEBe+sTiZ
-# BR8HAdoDr/sVcc8PItHUsvUumwkbie5hzpua8sxUZA8jKzG3aUO3IGrWkZCJ3AhB
-# oJpaUL65NOhFkmb4Ax135+vyioR3edVKGh/DKE/6sQUC5xmKTh8jqjKO9Z3TaU0j
-# z5S8PolcDjBT9gs2IuDFc6+BDn5t893C+be1sNNe2oAcVywIgt+fixwn7VXh/YPW
-# NQadO/J/Lk6hMJ8hJVhUivOUdS3+z0fWdWwHuxPXVOYFcM9Bbtk+4ebZb1xnNTF8
-# 0k1bkvi7T5gC9SiP0a2NZlIma5w7FJI=
+# AQUABIIBACtFE52oCd6QqsH4rCd4Vz2BhDBzynCZu5eU87HZjqRfTZiDFQgyjCPG
+# HUuYnqwr7pmTeRGCaQddUK3k5QTjZhW8RH7aG0zFMYs3hHs18EDRml0/L3zipi2j
+# vfY65wlWdPVgrtLrmyAFXCgQPF9HPrAHKPEaQrwHVFcS9WKxorj7NKfi0Da8dXxI
+# UApS1P6ut6anafnSlG+8bSRQWmnl2C3TFvGr0zCubF85P2I8kmpXtiizKCsxBycQ
+# Vv77LoVPePLlxX9ONF3nxe3iPU+HVnkV+HgvOdbyaHp5Ykp7BA6M1I8W+1ZJ0Fjh
+# asuSDyY/CrIGM8GMtaLmnSt91wLZky8=
 # SIG # End signature block
